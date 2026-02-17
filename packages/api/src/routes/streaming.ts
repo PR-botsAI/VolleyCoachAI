@@ -15,6 +15,11 @@ import type { ApiResponse, LiveStreamInfo, GameSummary } from "@volleycoach/shar
 import { requireAuth } from "../middleware/auth.js";
 import { requireTier } from "../middleware/tier-gate.js";
 import { broadcastToStream, getStreamViewerCount } from "../realtime/websocket.js";
+import {
+  createLiveStream as muxCreateLiveStream,
+  endLiveStream as muxEndLiveStream,
+  getPlaybackUrl,
+} from "../lib/mux.js";
 
 const router = Router();
 
@@ -261,6 +266,21 @@ router.post(
         return;
       }
 
+      // Create a Mux live stream and obtain the stream key and playback ID
+      let muxStreamKey: string | null = null;
+      let muxPlaybackId: string | null = null;
+      let muxAssetId: string | null = null;
+
+      try {
+        const muxStream = await muxCreateLiveStream(data.title);
+        muxStreamKey = muxStream.streamKey;
+        muxPlaybackId = muxStream.playbackId;
+        muxAssetId = muxStream.muxStreamId;
+      } catch (muxErr) {
+        console.error("[Streaming] Mux stream creation failed:", muxErr);
+        // Continue without Mux data; the stream can still be created in the DB
+      }
+
       const [newStream] = await db
         .insert(liveStreams)
         .values({
@@ -271,6 +291,9 @@ router.post(
           status: "idle",
           isPublic: data.isPublic,
           viewerCount: 0,
+          muxStreamKey,
+          muxPlaybackId,
+          muxAssetId,
         })
         .returning();
 
@@ -284,7 +307,11 @@ router.post(
 
       res.status(201).json({
         success: true,
-        data: newStream,
+        data: {
+          ...newStream,
+          // Include the stream key so the broadcaster can use it
+          streamKey: muxStreamKey,
+        },
       } satisfies ApiResponse);
     } catch (err) {
       console.error("[Streaming] Error creating stream:", err);
@@ -365,11 +392,17 @@ router.post(
         streamId,
         title: updated.title,
         startedAt: updated.startedAt?.toISOString() ?? null,
+        playbackId: updated.muxPlaybackId,
       });
 
       res.json({
         success: true,
-        data: updated,
+        data: {
+          ...updated,
+          playbackUrl: updated.muxPlaybackId
+            ? getPlaybackUrl(updated.muxPlaybackId)
+            : null,
+        },
       } satisfies ApiResponse);
     } catch (err) {
       console.error("[Streaming] Error starting stream:", err);
@@ -437,6 +470,20 @@ router.post(
         return;
       }
 
+      // Signal Mux to complete the live stream if we have a Mux stream ID
+      if (stream.muxAssetId) {
+        try {
+          await muxEndLiveStream(stream.muxAssetId);
+        } catch (muxErr) {
+          console.error(
+            "[Streaming] Mux endLiveStream failed for stream",
+            stream.muxAssetId,
+            muxErr
+          );
+          // Continue with ending the stream in our DB even if Mux fails
+        }
+      }
+
       const endedAt = new Date();
       const durationSeconds = stream.startedAt
         ? Math.floor((endedAt.getTime() - stream.startedAt.getTime()) / 1000)
@@ -472,5 +519,68 @@ router.post(
     }
   }
 );
+
+/**
+ * GET /api/streams/:id/playback
+ * Returns the HLS playback URL for viewers of a stream.
+ */
+router.get("/api/streams/:id/playback", async (req: Request, res: Response) => {
+  try {
+    const streamId = parseInt(req.params.id, 10);
+    if (isNaN(streamId)) {
+      res.status(400).json({
+        success: false,
+        error: { code: "INVALID_ID", message: "Invalid stream ID." },
+      } satisfies ApiResponse);
+      return;
+    }
+
+    const [stream] = await db
+      .select()
+      .from(liveStreams)
+      .where(eq(liveStreams.id, streamId))
+      .limit(1);
+
+    if (!stream) {
+      res.status(404).json({
+        success: false,
+        error: { code: "NOT_FOUND", message: "Stream not found." },
+      } satisfies ApiResponse);
+      return;
+    }
+
+    if (!stream.muxPlaybackId) {
+      res.status(404).json({
+        success: false,
+        error: {
+          code: "NO_PLAYBACK",
+          message: "No playback ID available for this stream.",
+        },
+      } satisfies ApiResponse);
+      return;
+    }
+
+    const playbackUrl = getPlaybackUrl(stream.muxPlaybackId);
+
+    res.json({
+      success: true,
+      data: {
+        streamId: stream.id,
+        playbackId: stream.muxPlaybackId,
+        playbackUrl,
+        status: stream.status,
+      },
+    } satisfies ApiResponse);
+  } catch (err) {
+    console.error("[Streaming] Error fetching playback URL:", err);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Failed to fetch playback URL.",
+      },
+    } satisfies ApiResponse);
+  }
+});
 
 export default router;

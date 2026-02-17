@@ -1,5 +1,5 @@
 import { Router, type Request, type Response } from "express";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { db } from "../lib/db.js";
 import {
   videos,
@@ -194,16 +194,9 @@ router.post(
       await db
         .update(subscriptions)
         .set({
-          aiAnalysesUsed: eq(subscriptions.userId, user.id)
-            ? subscriptions.aiAnalysesUsed
-            : 0,
+          aiAnalysesUsed: sql`ai_analyses_used + 1`,
         })
         .where(eq(subscriptions.userId, user.id));
-
-      // Use raw SQL for the increment since Drizzle doesn't have a clean .increment()
-      await db.execute(
-        `UPDATE subscriptions SET ai_analyses_used = ai_analyses_used + 1 WHERE user_id = '${user.id}'`
-      );
 
       // Enqueue analysis job
       const job = await analysisQueue.add(

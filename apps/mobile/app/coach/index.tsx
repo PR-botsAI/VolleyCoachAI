@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback } from "react";
 import {
   View,
   Text,
@@ -10,12 +10,11 @@ import {
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import * as DocumentPicker from "expo-document-picker";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "../../components/ui/Badge";
 import { Card } from "../../components/ui/Card";
-import { Button } from "../../components/ui/Button";
 import { TierGate } from "../../components/ui/TierGate";
+import { VideoUpload } from "../../components/analysis/VideoUpload";
 import { useSubscription } from "../../hooks/useSubscription";
 import { useAppStore } from "../../stores/app";
 import { api } from "../../services/api";
@@ -42,7 +41,6 @@ export default function CoachScreen() {
     isStarterTier,
   } = useSubscription();
   const uploadProgress = useAppStore((state) => state.uploadProgress);
-  const [isUploading, setIsUploading] = useState(false);
 
   const {
     data: analyses,
@@ -55,45 +53,15 @@ export default function CoachScreen() {
     },
   });
 
-  const uploadMutation = useMutation({
-    mutationFn: async (fileUri: string) => {
-      const formData = new FormData();
-      formData.append("video", {
-        uri: fileUri,
-        type: "video/mp4",
-        name: "analysis-video.mp4",
-      } as unknown as Blob);
-
-      const response = await api.upload<{ videoId: number }>(
-        "/videos/upload",
-        formData
-      );
-      return response.data;
-    },
-    onSuccess: () => {
+  const handleUploadComplete = useCallback(
+    (videoId: number, _gcsPath: string) => {
+      // Invalidate the analyses list so it refreshes when the user comes back
       queryClient.invalidateQueries({ queryKey: ["analyses"] });
-      setIsUploading(false);
+      // Navigate to the analysis screen to watch progress
+      router.push(`/analysis/${videoId}`);
     },
-    onError: () => {
-      setIsUploading(false);
-    },
-  });
-
-  const handleUpload = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "video/*",
-        copyToCacheDirectory: true,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        setIsUploading(true);
-        uploadMutation.mutate(result.assets[0].uri);
-      }
-    } catch {
-      setIsUploading(false);
-    }
-  };
+    [queryClient, router]
+  );
 
   const hasActiveUploads = Object.keys(uploadProgress).length > 0;
 
@@ -104,44 +72,20 @@ export default function CoachScreen() {
     >
       {/* Upload card */}
       <View className="px-6 mt-4">
-        <TouchableOpacity
-          onPress={handleUpload}
-          disabled={isUploading || !canUseAI}
-          activeOpacity={0.8}
-          className="bg-white dark:bg-gray-800 rounded-2xl border-2 border-dashed border-primary-300 dark:border-primary-700 p-8 items-center"
-        >
-          <View className="w-20 h-20 bg-primary-100 dark:bg-primary-900 rounded-full items-center justify-center mb-4">
-            {isUploading ? (
-              <ActivityIndicator size="large" color="#4F46E5" />
-            ) : (
-              <Ionicons
-                name="cloud-upload-outline"
-                size={40}
-                color="#4F46E5"
-              />
-            )}
+        <VideoUpload
+          onUploadComplete={handleUploadComplete}
+          disabled={!canUseAI}
+        />
+        {canUseAI && (
+          <View className="mt-2 flex-row items-center justify-center">
+            <Ionicons name="sparkles" size={14} color="#F97316" />
+            <Text className="text-xs text-secondary-500 font-medium ml-1">
+              {remainingAnalyses === Infinity
+                ? "Unlimited analyses available"
+                : `${remainingAnalyses} analyses remaining this month`}
+            </Text>
           </View>
-          <Text className="text-lg font-bold text-gray-900 dark:text-white text-center">
-            {isUploading
-              ? "Uploading Video..."
-              : "Upload Video for Analysis"}
-          </Text>
-          <Text className="text-sm text-gray-500 dark:text-gray-400 text-center mt-1">
-            {isUploading
-              ? "Please wait while your video is being uploaded"
-              : "Select a game video to get AI-powered coaching insights"}
-          </Text>
-          {canUseAI && (
-            <View className="mt-3 flex-row items-center">
-              <Ionicons name="sparkles" size={14} color="#F97316" />
-              <Text className="text-xs text-secondary-500 font-medium ml-1">
-                {remainingAnalyses === Infinity
-                  ? "Unlimited analyses available"
-                  : `${remainingAnalyses} analyses remaining this month`}
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
+        )}
       </View>
 
       {/* Active uploads */}

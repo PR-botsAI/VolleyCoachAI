@@ -10,7 +10,7 @@ import { VideoAnalysisAgent } from "./video-agent";
 import { CoachingAgent } from "./coaching-agent";
 import { broadcastAnalysisProgress, sendNotification } from "../realtime/websocket";
 import { db } from "../lib/db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { videos, subscriptions } from "@volleycoach/shared/schema";
 
 /**
@@ -175,7 +175,7 @@ export class Orchestrator extends BaseAgent {
     await db
       .update(subscriptions)
       .set({
-        aiAnalysesUsed: db.raw`ai_analyses_used + 1` as any,
+        aiAnalysesUsed: sql`ai_analyses_used + 1`,
       })
       .where(eq(subscriptions.userId, task.userId));
 

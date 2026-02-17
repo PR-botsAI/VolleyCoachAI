@@ -17,6 +17,9 @@ import analysisRouter from "./routes/analysis.js";
 import subscriptionsRouter from "./routes/subscriptions.js";
 import playersRouter from "./routes/players.js";
 import standingsRouter from "./routes/standings.js";
+import notificationsRouter from "./routes/notifications.js";
+import seasonsRouter from "./routes/seasons.js";
+import tournamentsRouter from "./routes/tournaments.js";
 
 // ── Express App ─────────────────────────────────────────────
 
@@ -63,7 +66,10 @@ app.use(streamingRouter);     // /api/streams/*
 app.use(analysisRouter);      // /api/analysis/* and /api/upload/*
 app.use(subscriptionsRouter); // /api/subscriptions/*
 app.use(playersRouter);       // /api/players/*
-app.use(standingsRouter);     // /api/standings/*
+app.use(standingsRouter);       // /api/standings/*
+app.use(notificationsRouter);   // /api/notifications/*
+app.use(seasonsRouter);         // /api/seasons/*
+app.use(tournamentsRouter);     // /api/tournaments/*
 
 // ── Health Check ────────────────────────────────────────────
 
