@@ -180,6 +180,19 @@ export default function RootLayout() {
                 headerTintColor: "#4F46E5",
               }}
             />
+            <Stack.Screen
+              name="player/[id]"
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="stream/[id]"
+              options={{
+                headerShown: false,
+                animation: "slide_from_bottom",
+              }}
+            />
           </Stack>
         </AuthGuard>
         <StatusBar style="auto" />
