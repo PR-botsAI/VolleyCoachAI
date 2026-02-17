@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.turbo/
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+*.tsbuildinfo
+
+# Expo
+apps/mobile/.expo/
+apps/mobile/android/
+apps/mobile/ios/
+
+# Old project (reference only)
+VolleyCoachAI/

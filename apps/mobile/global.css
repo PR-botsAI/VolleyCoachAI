@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 79 70 229;
+    --color-secondary: 249 115 22;
+    --color-accent: 20 184 166;
+    --color-success: 16 185 129;
+    --color-warning: 245 158 11;
+    --color-danger: 239 68 68;
+    --color-court: 212 165 116;
+
+    --color-background: 255 255 255;
+    --color-surface: 249 250 251;
+    --color-surface-elevated: 255 255 255;
+    --color-text-primary: 17 24 39;
+    --color-text-secondary: 107 114 128;
+    --color-text-tertiary: 156 163 175;
+    --color-border: 229 231 235;
+
+    --color-navy-deep: 15 23 42;
+    --color-navy-medium: 30 41 59;
+    --color-navy-light: 51 65 85;
+
+    --color-live: 239 68 68;
+    --color-live-glow: 239 68 68 0.4;
+    --color-stream-overlay: 0 0 0 0.6;
+
+    --score-font-size: 56px;
+    --card-radius: 16px;
+    --touch-target-min: 44px;
+  }
+
+  .dark {
+    --color-background: 15 23 42;
+    --color-surface: 30 41 59;
+    --color-surface-elevated: 51 65 85;
+    --color-text-primary: 249 250 251;
+    --color-text-secondary: 156 163 175;
+    --color-text-tertiary: 107 114 128;
+    --color-border: 75 85 99;
+  }
+}
+
+@layer components {
+  .volleyball-gradient {
+    background: linear-gradient(135deg, #4F46E5 0%, #6366F1 50%, #818CF8 100%);
+  }
+
+  .court-gradient {
+    background: linear-gradient(180deg, #D4A574 0%, #C48B52 100%);
+  }
+
+  .navy-gradient {
+    background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+  }
+
+  .premium-gradient {
+    background: linear-gradient(135deg, #F97316 0%, #FB923C 50%, #FDBA74 100%);
+  }
+
+  .live-gradient {
+    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  }
+
+  .live-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .card-shadow {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+
+  .card-shadow-lg {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+
+  .card-shadow-xl {
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, #E5E7EB 25%, #F3F4F6 50%, #E5E7EB 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .dark .skeleton {
+    background: linear-gradient(90deg, #374151 25%, #4B5563 50%, #374151 75%);
+    background-size: 200% 100%;
+  }
+}
+
+@layer utilities {
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+  }
+
+  .text-shadow-md {
+    text-shadow: 0 2px 4px rgb(0 0 0 / 0.2);
+  }
+
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgb(0 0 0 / 0.3);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

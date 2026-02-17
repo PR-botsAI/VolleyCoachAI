@@ -1,0 +1,24 @@
+{
+  "name": "volleycoach",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "db:push": "pnpm --filter @volleycoach/api db:push",
+    "db:generate": "pnpm --filter @volleycoach/api db:generate",
+    "db:migrate": "pnpm --filter @volleycoach/api db:migrate",
+    "api:dev": "pnpm --filter @volleycoach/api dev",
+    "mobile:dev": "pnpm --filter @volleycoach/mobile dev",
+    "mobile:ios": "pnpm --filter @volleycoach/mobile ios",
+    "mobile:android": "pnpm --filter @volleycoach/mobile android"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

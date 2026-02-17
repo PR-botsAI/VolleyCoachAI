@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "paths": {
+      "@volleycoach/shared": ["../shared/src"],
+      "@volleycoach/shared/*": ["../shared/src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "references": [{ "path": "../shared" }]
+}
