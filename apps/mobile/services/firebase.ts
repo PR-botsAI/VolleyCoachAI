@@ -1,6 +1,8 @@
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import {
+  initializeAuth,
   getAuth,
+  getReactNativePersistence,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
@@ -10,6 +12,7 @@ import {
   type User,
   type Unsubscribe,
 } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY ?? "demo-key",
@@ -32,11 +35,13 @@ try {
   } else {
     app = getApps()[0];
   }
-  auth = getAuth(app);
+  // Use initializeAuth with AsyncStorage for React Native persistence
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage),
+  });
   firebaseReady = true;
 } catch (error) {
-  console.warn("[Firebase] Init failed (no valid config):", error);
-  // Create dummy objects so the app still renders
+  console.warn("[Firebase] Init failed:", error);
   app = {} as FirebaseApp;
   auth = {} as Auth;
 }
