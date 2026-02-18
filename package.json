@@ -20,5 +20,8 @@
   "packageManager": "pnpm@9.15.0",
   "engines": {
     "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "react-native-worklets": "^0.7.4"
   }
 }

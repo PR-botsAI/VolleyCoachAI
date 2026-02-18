@@ -1,30 +1,65 @@
 import { create } from "zustand";
 import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
-import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 import type { AuthUser, AuthSession } from "@volleycoach/shared";
 import type { TierKey } from "@volleycoach/shared";
 
-const secureStorage: StateStorage = {
-  getItem: async (name: string): Promise<string | null> => {
+// Use localStorage on web, SecureStore on native
+const webStorage: StateStorage = {
+  getItem: (name: string) => {
+    if (typeof window === "undefined") return null;
+    return window.localStorage.getItem(name);
+  },
+  setItem: (name: string, value: string) => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(name, value);
+    }
+  },
+  removeItem: (name: string) => {
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(name);
+    }
+  },
+};
+
+async function getStorage(): Promise<StateStorage> {
+  if (Platform.OS === "web") return webStorage;
+  try {
+    const SecureStore = await import("expo-secure-store");
+    return {
+      getItem: async (name: string) => {
+        try { return await SecureStore.getItemAsync(name); } catch { return null; }
+      },
+      setItem: async (name: string, value: string) => {
+        try { await SecureStore.setItemAsync(name, value); } catch {}
+      },
+      removeItem: async (name: string) => {
+        try { await SecureStore.deleteItemAsync(name); } catch {}
+      },
+    };
+  } catch {
+    return webStorage;
+  }
+}
+
+const storageAdapter: StateStorage = Platform.OS === "web" ? webStorage : {
+  getItem: async (name: string) => {
     try {
+      const SecureStore = require("expo-secure-store");
       return await SecureStore.getItemAsync(name);
-    } catch {
-      return null;
-    }
+    } catch { return null; }
   },
-  setItem: async (name: string, value: string): Promise<void> => {
+  setItem: async (name: string, value: string) => {
     try {
+      const SecureStore = require("expo-secure-store");
       await SecureStore.setItemAsync(name, value);
-    } catch {
-      // SecureStore may fail in some environments
-    }
+    } catch {}
   },
-  removeItem: async (name: string): Promise<void> => {
+  removeItem: async (name: string) => {
     try {
+      const SecureStore = require("expo-secure-store");
       await SecureStore.deleteItemAsync(name);
-    } catch {
-      // Silently fail
-    }
+    } catch {}
   },
 };
 
@@ -131,7 +166,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "volleycoach-auth",
-      storage: createJSONStorage(() => secureStorage),
+      storage: createJSONStorage(() => storageAdapter),
       partialize: (state) => ({
         user: state.user,
         firebaseIdToken: state.firebaseIdToken,

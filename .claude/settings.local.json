@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm add:*)",
+      "Bash(DATABASE_URL=\"postgresql://volleycoach:volleycoach_dev@localhost:5432/volleycoach\" REDIS_URL=\"redis://localhost:6379\" NODE_ENV=development API_PORT=3001 npx tsx:*)"
+    ]
+  }
+}
