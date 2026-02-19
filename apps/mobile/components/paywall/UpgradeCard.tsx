@@ -4,8 +4,8 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Button } from "../ui/Button";
 import { useSubscription } from "../../hooks/useSubscription";
-import { TIERS } from "@volleycoach/shared";
-import type { TierKey } from "@volleycoach/shared";
+import { TIERS } from "@volleycoach/shared/mobile";
+import type { TierKey } from "@volleycoach/shared/mobile";
 
 interface UpgradeCardProps {
   targetTier?: TierKey;

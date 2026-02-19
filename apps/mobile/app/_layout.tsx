@@ -23,45 +23,22 @@ const queryClient = new QueryClient({
   },
 });
 
-function ErrorFallback({
-  error,
-  onReset,
-}: {
-  error: Error;
-  onReset: () => void;
-}) {
-  return (
-    <View className="flex-1 items-center justify-center bg-white dark:bg-gray-900 px-6">
-      <View className="w-16 h-16 rounded-full bg-danger-100 items-center justify-center mb-4">
-        <Text className="text-3xl">!</Text>
-      </View>
-      <Text className="text-xl font-bold text-gray-900 dark:text-white text-center mb-2">
-        Something went wrong
-      </Text>
-      <Text className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
-        {error.message}
-      </Text>
-      <View className="bg-primary-600 rounded-xl px-6 py-3">
-        <Text
-          className="text-white font-semibold text-base"
-          onPress={onReset}
-        >
-          Try Again
-        </Text>
-      </View>
-    </View>
-  );
-}
-
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const segments = useSegments();
-  const user = useAuthStore((state) => state.user);
-  const firebaseIdToken = useAuthStore((state) => state.firebaseIdToken);
-  const isHydrated = useAuthStore((state) => state.isHydrated);
+  const user = useAuthStore((s) => s.user);
+  const firebaseIdToken = useAuthStore((s) => s.firebaseIdToken);
+  const isHydrated = useAuthStore((s) => s.isHydrated);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (!isHydrated) return;
+    // Wait for navigation to be ready after first render
+    const timer = setTimeout(() => setIsMounted(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted || !isHydrated) return;
 
     const isAuthenticated = user !== null && firebaseIdToken !== null;
     const inAuthGroup = segments[0] === "(auth)";
@@ -75,7 +52,7 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
         router.replace("/(tabs)/home");
       }
     }
-  }, [user, firebaseIdToken, isHydrated, segments]);
+  }, [isMounted, isHydrated, user, firebaseIdToken, segments]);
 
   useEffect(() => {
     if (user && firebaseIdToken) {
@@ -90,36 +67,36 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
-  const [appError, setAppError] = useState<Error | null>(null);
   const isHydrated = useAuthStore((state) => state.isHydrated);
+  const setHydrated = useAuthStore((state) => state.setHydrated);
+  const setLoading = useAuthStore((state) => state.setLoading);
 
   const [fontsLoaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
+  // Fallback: if hydration doesn't complete in 2s, force it
   useEffect(() => {
-    if (isHydrated && fontsLoaded) {
+    const timeout = setTimeout(() => {
+      if (!isHydrated) {
+        console.warn("[App] Hydration timeout - forcing ready state");
+        setHydrated(true);
+        setLoading(false);
+      }
+    }, 2000);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // Hide splash screen once fonts are loaded
+  useEffect(() => {
+    if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [isHydrated, fontsLoaded]);
+  }, [fontsLoaded]);
 
-  if (appError) {
-    return (
-      <ErrorFallback error={appError} onReset={() => setAppError(null)} />
-    );
-  }
-
-  if (!isHydrated || !fontsLoaded) {
-    return (
-      <View className="flex-1 items-center justify-center bg-primary-600">
-        <ActivityIndicator size="large" color="#FFFFFF" />
-        <Text className="text-white text-lg font-semibold mt-4">
-          VolleyCoach
-        </Text>
-      </View>
-    );
-  }
-
+  // Always render the full provider + Stack tree — never return early before it.
+  // If hydration is not done yet, the Stack still mounts (so Expo Router is ready)
+  // and we overlay a loading spinner using inline styles (NativeWind may not be loaded yet).
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
@@ -196,6 +173,32 @@ export default function RootLayout() {
           </Stack>
         </AuthGuard>
         <StatusBar style="auto" />
+        {(!fontsLoaded || !isHydrated) && (
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#4F46E5",
+            }}
+          >
+            <ActivityIndicator size="large" color="#FFFFFF" />
+            <Text
+              style={{
+                color: "white",
+                fontSize: 18,
+                fontWeight: "600",
+                marginTop: 16,
+              }}
+            >
+              VolleyCoach
+            </Text>
+          </View>
+        )}
       </SafeAreaProvider>
     </QueryClientProvider>
   );

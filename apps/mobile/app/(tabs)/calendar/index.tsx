@@ -15,7 +15,7 @@ import { Badge } from "../../../components/ui/Badge";
 import { Card } from "../../../components/ui/Card";
 import { useAppStore } from "../../../stores/app";
 import { api } from "../../../services/api";
-import type { CalendarEventItem } from "@volleycoach/shared";
+import type { CalendarEventItem } from "@volleycoach/shared/mobile";
 import type { DateData, MarkedDates } from "react-native-calendars/src/types";
 
 type ViewMode = "month" | "week" | "agenda";

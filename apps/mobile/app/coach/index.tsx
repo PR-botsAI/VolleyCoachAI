@@ -18,7 +18,7 @@ import { VideoUpload } from "../../components/analysis/VideoUpload";
 import { useSubscription } from "../../hooks/useSubscription";
 import { useAppStore } from "../../stores/app";
 import { api } from "../../services/api";
-import type { FullAnalysisReport } from "@volleycoach/shared";
+import type { FullAnalysisReport } from "@volleycoach/shared/mobile";
 
 interface AnalysisListItem {
   id: number;

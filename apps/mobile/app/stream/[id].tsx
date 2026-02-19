@@ -21,7 +21,7 @@ import { Avatar } from "../../components/ui/Avatar";
 import { wsService } from "../../services/websocket";
 import { api } from "../../services/api";
 import { useAuthStore } from "../../stores/auth";
-import type { LiveStreamInfo, LiveScoreUpdate } from "@volleycoach/shared";
+import type { LiveStreamInfo, LiveScoreUpdate } from "@volleycoach/shared/mobile";
 
 interface ChatMessage {
   id: string;

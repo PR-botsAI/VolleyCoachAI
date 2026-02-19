@@ -1,10 +1,10 @@
 import Constants from "expo-constants";
 import { useAuthStore } from "../stores/auth";
 import { getIdToken } from "./firebase";
-import type { ApiResponse } from "@volleycoach/shared";
+import type { ApiResponse } from "@volleycoach/shared/mobile";
 
 const BASE_URL =
-  Constants.expoConfig?.extra?.apiUrl ?? "http://localhost:3000/api";
+  Constants.expoConfig?.extra?.apiUrl ?? "http://192.168.0.108:3001/api";
 
 interface RequestConfig extends Omit<RequestInit, "body"> {
   body?: Record<string, unknown> | FormData;

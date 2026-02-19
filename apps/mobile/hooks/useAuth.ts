@@ -11,7 +11,7 @@ import {
   onAuthStateChanged,
   getIdToken,
 } from "../services/firebase";
-import type { AuthSession } from "@volleycoach/shared";
+import type { AuthSession } from "@volleycoach/shared/mobile";
 
 interface LoginCredentials {
   email: string;

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { View, Text, Animated } from "react-native";
-import type { SetDetail } from "@volleycoach/shared";
+import type { SetDetail } from "@volleycoach/shared/mobile";
 
 interface ScoreDisplayProps {
   homeTeamName: string;

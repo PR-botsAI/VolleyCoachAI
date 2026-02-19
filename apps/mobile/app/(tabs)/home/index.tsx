@@ -6,7 +6,6 @@ import {
   RefreshControl,
   TouchableOpacity,
   FlatList,
-  Animated,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,7 +13,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar } from "../../../components/ui/Avatar";
 import { Card } from "../../../components/ui/Card";
-import { Badge } from "../../../components/ui/Badge";
 import { LiveGameCard } from "../../../components/games/LiveGameCard";
 import { GameCard } from "../../../components/games/GameCard";
 import { useAuthStore } from "../../../stores/auth";
@@ -22,8 +20,7 @@ import { api } from "../../../services/api";
 import type {
   GameSummary,
   TeamSummary,
-  ClubWithTeams,
-} from "@volleycoach/shared";
+} from "@volleycoach/shared/mobile";
 
 export default function HomeScreen() {
   const router = useRouter();

@@ -16,7 +16,7 @@ import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { GameCard } from "../../components/games/GameCard";
 import { api } from "../../services/api";
-import type { GameSummary } from "@volleycoach/shared";
+import type { GameSummary } from "@volleycoach/shared/mobile";
 
 interface PlayerProfile {
   id: number;

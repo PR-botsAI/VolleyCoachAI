@@ -15,8 +15,8 @@ import { Button } from "../../components/ui/Button";
 import { Avatar } from "../../components/ui/Avatar";
 import { GameCard } from "../../components/games/GameCard";
 import { api } from "../../services/api";
-import type { TeamWithRoster, GameSummary } from "@volleycoach/shared";
-import { POSITIONS } from "@volleycoach/shared";
+import type { TeamWithRoster, GameSummary } from "@volleycoach/shared/mobile";
+import { POSITIONS } from "@volleycoach/shared/mobile";
 
 type TabKey = "roster" | "schedule" | "stats";
 

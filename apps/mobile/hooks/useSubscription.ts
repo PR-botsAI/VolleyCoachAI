@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useAuthStore } from "../stores/auth";
-import { TIERS } from "@volleycoach/shared";
-import type { TierKey, TierConfig } from "@volleycoach/shared";
+import { TIERS } from "@volleycoach/shared/mobile";
+import type { TierKey, TierConfig } from "@volleycoach/shared/mobile";
 
 type FeatureKey = keyof Omit<TierConfig, "name" | "price">;
 

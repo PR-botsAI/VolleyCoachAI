@@ -20,7 +20,7 @@ import type {
   ClubWithTeams,
   GameSummary,
   StandingEntry,
-} from "@volleycoach/shared";
+} from "@volleycoach/shared/mobile";
 
 type TabKey = "overview" | "teams" | "schedule" | "standings";
 

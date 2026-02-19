@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Badge } from "../ui/Badge";
-import type { TeamSummary } from "@volleycoach/shared";
+import type { TeamSummary } from "@volleycoach/shared/mobile";
 
 interface TeamBranchCardProps {
   team: TeamSummary;

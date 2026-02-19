@@ -12,8 +12,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { api, ApiError, BASE_URL } from "../../services/api";
 import { wsService } from "../../services/websocket";
 import { useAppStore } from "../../stores/app";
-import { AI_CONFIG } from "@volleycoach/shared";
-import type { AnalysisProgressUpdate } from "@volleycoach/shared";
+import { AI_CONFIG } from "@volleycoach/shared/mobile";
+import type { AnalysisProgressUpdate } from "@volleycoach/shared/mobile";
 
 // ── Types ──────────────────────────────────────────────────────
 

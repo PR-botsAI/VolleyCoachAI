@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Animated } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Badge } from "../ui/Badge";
-import type { GameSummary } from "@volleycoach/shared";
+import type { GameSummary } from "@volleycoach/shared/mobile";
 
 interface LiveGameCardProps {
   game: GameSummary;

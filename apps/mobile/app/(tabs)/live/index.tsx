@@ -18,7 +18,7 @@ import { LiveGameCard } from "../../../components/games/LiveGameCard";
 import { useSubscription } from "../../../hooks/useSubscription";
 import { wsService } from "../../../services/websocket";
 import { api } from "../../../services/api";
-import type { LiveStreamInfo, GameSummary } from "@volleycoach/shared";
+import type { LiveStreamInfo, GameSummary } from "@volleycoach/shared/mobile";
 
 export default function LiveScreen() {
   const router = useRouter();

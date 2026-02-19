@@ -18,6 +18,7 @@
     "baseUrl": ".",
     "paths": {
       "@volleycoach/shared": ["../../packages/shared/src"],
+      "@volleycoach/shared/mobile": ["../../packages/shared/src/mobile"],
       "@volleycoach/shared/*": ["../../packages/shared/src/*"],
       "@/*": ["./*"]
     },

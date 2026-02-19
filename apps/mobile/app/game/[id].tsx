@@ -21,7 +21,7 @@ import type {
   GameDetail,
   LiveScoreUpdate,
   SetDetail,
-} from "@volleycoach/shared";
+} from "@volleycoach/shared/mobile";
 
 type PointType = "kill" | "ace" | "block" | "opponent_error" | "tip" | "other";
 

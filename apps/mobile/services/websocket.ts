@@ -2,15 +2,15 @@ import { io, Socket } from "socket.io-client";
 import Constants from "expo-constants";
 import { useAuthStore } from "../stores/auth";
 import { useAppStore } from "../stores/app";
-import { WS_EVENTS } from "@volleycoach/shared";
+import { WS_EVENTS } from "@volleycoach/shared/mobile";
 import type {
   LiveScoreUpdate,
   AnalysisProgressUpdate,
   LiveStreamInfo,
-} from "@volleycoach/shared";
+} from "@volleycoach/shared/mobile";
 
 const WS_URL =
-  Constants.expoConfig?.extra?.wsUrl ?? "http://localhost:3000";
+  Constants.expoConfig?.extra?.wsUrl ?? "http://192.168.0.108:3001";
 
 type ScoreUpdateHandler = (update: LiveScoreUpdate) => void;
 type StreamEventHandler = (stream: LiveStreamInfo) => void;

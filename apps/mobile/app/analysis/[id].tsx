@@ -19,7 +19,7 @@ import type {
   AnalysisErrorItem,
   AnalysisExerciseItem,
   AnalysisPlayerStatItem,
-} from "@volleycoach/shared";
+} from "@volleycoach/shared/mobile";
 
 type TabKey = "errors" | "exercises" | "players" | "timeline";
 
